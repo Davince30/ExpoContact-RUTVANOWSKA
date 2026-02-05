@@ -161,6 +161,26 @@
             border-top: 2px solid #e0e0e0;
         }
 
+        .admin-locked {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .admin-locked input {
+            max-width: 200px;
+            margin: 15px auto;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .admin-content {
+            display: none;
+        }
+
+        .admin-content.unlocked {
+            display: block;
+        }
+
         .contact-list {
             max-height: 400px;
             overflow-y: auto;
@@ -225,7 +245,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>📝 Contact RUTVANOWSKA</h1>
+        <h1>📝 Inscription Expo</h1>
         <p class="subtitle">Merci de votre visite ! Laissez-nous vos coordonnées.</p>
 
         <div class="stats">
@@ -267,11 +287,24 @@
 
         <div class="admin-section">
             <h2 style="color: #333; margin-bottom: 15px; font-size: 20px;">🔐 Administration</h2>
-            <button class="btn btn-secondary" onclick="afficherContacts()">Voir tous les contacts</button>
-            <button class="btn btn-secondary" onclick="exporterContacts()">📥 Télécharger les contacts (CSV)</button>
-            <button class="btn btn-secondary" onclick="exporterVCard()">📇 Télécharger VCard (pour contacts iPhone/iPad)</button>
-            <button class="btn btn-secondary btn-delete-all" onclick="supprimerTout()">🗑️ Supprimer tous les contacts</button>
-            <div class="contact-list" id="contactList" style="display: none;"></div>
+            
+            <div class="admin-locked" id="adminLocked">
+                <p style="color: #666; margin-bottom: 15px;">Cette section est protégée</p>
+                <input type="password" id="adminPassword" placeholder="Mot de passe" autocomplete="off">
+                <button class="btn btn-secondary" onclick="verifierMotDePasse()">Déverrouiller</button>
+                <div id="wrongPassword" style="color: #dc3545; margin-top: 10px; display: none;">
+                    ❌ Mot de passe incorrect
+                </div>
+            </div>
+
+            <div class="admin-content" id="adminContent">
+                <button class="btn btn-secondary" onclick="afficherContacts()">Voir tous les contacts</button>
+                <button class="btn btn-secondary" onclick="exporterContacts()">📥 Télécharger les contacts (CSV)</button>
+                <button class="btn btn-secondary" onclick="exporterVCard()">📇 Télécharger VCard (pour contacts iPhone/iPad)</button>
+                <button class="btn btn-secondary btn-delete-all" onclick="supprimerTout()">🗑️ Supprimer tous les contacts</button>
+                <button class="btn btn-secondary" onclick="verrouiller()" style="background: #6c757d; margin-top: 15px;">🔒 Verrouiller</button>
+                <div class="contact-list" id="contactList" style="display: none;"></div>
+            </div>
         </div>
     </div>
 
@@ -493,6 +526,38 @@
 
         // Charger les contacts au démarrage
         chargerContacts();
+
+        // Système d'authentification admin
+        const ADMIN_PASSWORD = "1104";
+
+        function verifierMotDePasse() {
+            const password = document.getElementById('adminPassword').value;
+            const wrongPassword = document.getElementById('wrongPassword');
+            
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('adminLocked').style.display = 'none';
+                document.getElementById('adminContent').classList.add('unlocked');
+                document.getElementById('adminPassword').value = '';
+                wrongPassword.style.display = 'none';
+            } else {
+                wrongPassword.style.display = 'block';
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('adminPassword').focus();
+            }
+        }
+
+        function verrouiller() {
+            document.getElementById('adminLocked').style.display = 'block';
+            document.getElementById('adminContent').classList.remove('unlocked');
+            document.getElementById('contactList').style.display = 'none';
+        }
+
+        // Permettre la validation avec la touche Entrée
+        document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifierMotDePasse();
+            }
+        });
     </script>
 </body>
 </html>
