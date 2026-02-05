@@ -290,7 +290,7 @@
             
             <div class="admin-locked" id="adminLocked">
                 <p style="color: #666; margin-bottom: 15px;">Cette section est protégée</p>
-                <input type="password" id="adminPassword" placeholder="Mot de passe" autocomplete="off">
+                <input type="password" id="adminPassword" placeholder="Mot de passe" autocomplete="off" inputmode="tel" pattern="[0-9+#\s\-\(\)]*">
                 <button class="btn btn-secondary" onclick="verifierMotDePasse()">Déverrouiller</button>
                 <div id="wrongPassword" style="color: #dc3545; margin-top: 10px; display: none;">
                     ❌ Mot de passe incorrect
