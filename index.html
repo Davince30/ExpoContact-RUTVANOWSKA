@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Collecte de Contacts - Expo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-top: 10px;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+
+        .stats {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .stats strong {
+            color: #667eea;
+            font-size: 24px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .admin-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .contact-list {
+            max-height: 400px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .contact-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-item strong {
+            color: #667eea;
+        }
+
+        .contact-item div {
+            margin: 5px 0;
+            color: #333;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        .btn-delete-all {
+            background: #dc3545;
+            margin-top: 10px;
+        }
+
+        .btn-delete-all:hover {
+            background: #c82333;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 Inscription Expo</h1>
+        <p class="subtitle">Merci de votre visite ! Laissez-nous vos coordonnées.</p>
+
+        <div class="stats">
+            <strong id="contactCount">0</strong>
+            contacts enregistrés
+        </div>
+
+        <div class="success-message" id="successMessage">
+            ✅ Contact enregistré avec succès !
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            ⚠️ Veuillez remplir tous les champs correctement
+        </div>
+
+        <form id="contactForm">
+            <div class="form-group">
+                <label for="prenom">Prénom *</label>
+                <input type="text" id="prenom" required autocomplete="given-name">
+            </div>
+
+            <div class="form-group">
+                <label for="nom">Nom *</label>
+                <input type="text" id="nom" required autocomplete="family-name">
+            </div>
+
+            <div class="form-group">
+                <label for="telephone">Numéro de téléphone *</label>
+                <input type="tel" id="telephone" required autocomplete="tel" placeholder="06 12 34 56 78">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Adresse email *</label>
+                <input type="email" id="email" required autocomplete="email" placeholder="exemple@email.com">
+            </div>
+
+            <button type="submit" class="btn">Enregistrer</button>
+        </form>
+
+        <div class="admin-section">
+            <h2 style="color: #333; margin-bottom: 15px; font-size: 20px;">🔐 Administration</h2>
+            <button class="btn btn-secondary" onclick="afficherContacts()">Voir tous les contacts</button>
+            <button class="btn btn-secondary" onclick="exporterContacts()">📥 Télécharger les contacts (CSV)</button>
+            <button class="btn btn-secondary" onclick="exporterVCard()">📇 Télécharger VCard (pour contacts iPhone/iPad)</button>
+            <button class="btn btn-secondary btn-delete-all" onclick="supprimerTout()">🗑️ Supprimer tous les contacts</button>
+            <div class="contact-list" id="contactList" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Initialisation
+        let contacts = [];
+
+        // Charger les contacts au démarrage
+        function chargerContacts() {
+            try {
+                const savedContacts = localStorage.getItem('expo_contacts');
+                if (savedContacts) {
+                    contacts = JSON.parse(savedContacts);
+                    mettreAJourCompteur();
+                }
+            } catch (error) {
+                console.log('Aucun contact enregistré pour le moment');
+                contacts = [];
+            }
+        }
+
+        // Sauvegarder les contacts
+        function sauvegarderContacts() {
+            try {
+                localStorage.setItem('expo_contacts', JSON.stringify(contacts));
+                return true;
+            } catch (error) {
+                console.error('Erreur de sauvegarde:', error);
+                alert('Erreur lors de la sauvegarde. Vérifiez que le stockage Safari est activé.');
+                return false;
+            }
+        }
+
+        // Mettre à jour le compteur
+        function mettreAJourCompteur() {
+            document.getElementById('contactCount').textContent = contacts.length;
+        }
+
+        // Afficher un message
+        function afficherMessage(type, duree = 3000) {
+            const successMsg = document.getElementById('successMessage');
+            const errorMsg = document.getElementById('errorMessage');
+            
+            successMsg.style.display = 'none';
+            errorMsg.style.display = 'none';
+
+            if (type === 'success') {
+                successMsg.style.display = 'block';
+                setTimeout(() => successMsg.style.display = 'none', duree);
+            } else {
+                errorMsg.style.display = 'block';
+                setTimeout(() => errorMsg.style.display = 'none', duree);
+            }
+        }
+
+        // Gestion du formulaire
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const prenom = document.getElementById('prenom').value.trim();
+            const nom = document.getElementById('nom').value.trim();
+            const telephone = document.getElementById('telephone').value.trim();
+            const email = document.getElementById('email').value.trim();
+
+            // Validation
+            if (!prenom || !nom || !telephone || !email) {
+                afficherMessage('error');
+                return;
+            }
+
+            // Validation email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                afficherMessage('error');
+                return;
+            }
+
+            // Ajouter le contact
+            const nouveauContact = {
+                id: Date.now(),
+                prenom: prenom,
+                nom: nom,
+                telephone: telephone,
+                email: email,
+                dateEnregistrement: new Date().toLocaleString('fr-FR')
+            };
+
+            contacts.push(nouveauContact);
+            
+            // Sauvegarder
+            const sauvegarde = sauvegarderContacts();
+            
+            if (sauvegarde) {
+                afficherMessage('success');
+                mettreAJourCompteur();
+                
+                // Réinitialiser le formulaire
+                this.reset();
+                
+                // Scroll vers le haut
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                afficherMessage('error');
+            }
+        });
+
+        // Afficher tous les contacts
+        function afficherContacts() {
+            const contactList = document.getElementById('contactList');
+            
+            if (contactList.style.display === 'none') {
+                if (contacts.length === 0) {
+                    contactList.innerHTML = '<p style="text-align: center; color: #666;">Aucun contact enregistré</p>';
+                } else {
+                    contactList.innerHTML = contacts.map(contact => `
+                        <div class="contact-item">
+                            <div><strong>${contact.prenom} ${contact.nom}</strong></div>
+                            <div>📱 ${contact.telephone}</div>
+                            <div>📧 ${contact.email}</div>
+                            <div style="font-size: 12px; color: #999; margin-top: 5px;">
+                                Enregistré le ${contact.dateEnregistrement}
+                            </div>
+                            <button class="btn-delete" onclick="supprimerContact(${contact.id})">🗑️ Supprimer</button>
+                        </div>
+                    `).join('');
+                }
+                contactList.style.display = 'block';
+            } else {
+                contactList.style.display = 'none';
+            }
+        }
+
+        // Supprimer un contact spécifique
+        function supprimerContact(id) {
+            if (confirm('Voulez-vous vraiment supprimer ce contact ?')) {
+                contacts = contacts.filter(contact => contact.id !== id);
+                sauvegarderContacts();
+                mettreAJourCompteur();
+                afficherContacts(); // Rafraîchir la liste
+                afficherContacts(); // Toggle pour réafficher
+            }
+        }
+
+        // Supprimer tous les contacts
+        function supprimerTout() {
+            if (contacts.length === 0) {
+                alert('Aucun contact à supprimer');
+                return;
+            }
+            
+            if (confirm(`Voulez-vous vraiment supprimer TOUS les ${contacts.length} contacts ?\n\nCette action est irréversible !`)) {
+                if (confirm('Êtes-vous absolument certain ? Cette action ne peut pas être annulée.')) {
+                    contacts = [];
+                    sauvegarderContacts();
+                    mettreAJourCompteur();
+                    document.getElementById('contactList').style.display = 'none';
+                    alert('Tous les contacts ont été supprimés');
+                }
+            }
+        }
+
+        // Exporter en CSV
+        function exporterContacts() {
+            if (contacts.length === 0) {
+                alert('Aucun contact à exporter');
+                return;
+            }
+
+            let csv = 'Prénom,Nom,Téléphone,Email,Date d\'enregistrement\n';
+            
+            contacts.forEach(contact => {
+                csv += `"${contact.prenom}","${contact.nom}","${contact.telephone}","${contact.email}","${contact.dateEnregistrement}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `contacts_expo_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Exporter en VCard (format contacts iPhone/iPad)
+        function exporterVCard() {
+            if (contacts.length === 0) {
+                alert('Aucun contact à exporter');
+                return;
+            }
+
+            let vcard = '';
+            
+            contacts.forEach(contact => {
+                vcard += 'BEGIN:VCARD\n';
+                vcard += 'VERSION:3.0\n';
+                vcard += `N:${contact.nom};${contact.prenom};;;\n`;
+                vcard += `FN:${contact.prenom} ${contact.nom}\n`;
+                vcard += `TEL;TYPE=CELL:${contact.telephone}\n`;
+                vcard += `EMAIL:${contact.email}\n`;
+                vcard += 'END:VCARD\n';
+            });
+
+            const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `contacts_expo_${new Date().toISOString().split('T')[0]}.vcf`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Charger les contacts au démarrage
+        chargerContacts();
+    </script>
+</body>
+</html>
