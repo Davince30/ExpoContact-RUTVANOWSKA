@@ -159,6 +159,21 @@
             margin-top: 30px;
             padding-top: 30px;
             border-top: 2px solid #e0e0e0;
+            display: none;
+        }
+
+        .admin-section.visible {
+            display: block;
+        }
+
+        .admin-trigger {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            opacity: 0;
+            cursor: pointer;
         }
 
         .admin-locked {
@@ -245,7 +260,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>📝 Newsletter RUTVANOWSKA </h1>
+        <h1>📝 Newsletter RUTVANOWSKA</h1>
         <p class="subtitle">Merci de votre visite ! Laissez-nous vos coordonnées.</p>
 
         <div class="stats">
@@ -285,7 +300,10 @@
             <button type="submit" class="btn">Enregistrer</button>
         </form>
 
-        <div class="admin-section">
+        <!-- Zone cliquable invisible pour activer l'admin -->
+        <div class="admin-trigger" id="adminTrigger" onclick="toggleAdmin()"></div>
+
+        <div class="admin-section" id="adminSection">
             <h2 style="color: #333; margin-bottom: 15px; font-size: 20px;">🔐 Administration</h2>
             
             <div class="admin-locked" id="adminLocked">
@@ -529,6 +547,31 @@
 
         // Système d'authentification admin
         const ADMIN_PASSWORD = "1104";
+        let adminClicks = 0;
+        let adminClickTimer = null;
+
+        // Triple clic sur le coin en bas à droite pour afficher l'admin
+        function toggleAdmin() {
+            adminClicks++;
+            
+            if (adminClickTimer) {
+                clearTimeout(adminClickTimer);
+            }
+            
+            if (adminClicks >= 3) {
+                const adminSection = document.getElementById('adminSection');
+                if (adminSection.classList.contains('visible')) {
+                    adminSection.classList.remove('visible');
+                } else {
+                    adminSection.classList.add('visible');
+                }
+                adminClicks = 0;
+            } else {
+                adminClickTimer = setTimeout(() => {
+                    adminClicks = 0;
+                }, 1000);
+            }
+        }
 
         function verifierMotDePasse() {
             const password = document.getElementById('adminPassword').value;
@@ -550,6 +593,7 @@
             document.getElementById('adminLocked').style.display = 'block';
             document.getElementById('adminContent').classList.remove('unlocked');
             document.getElementById('contactList').style.display = 'none';
+            document.getElementById('adminSection').classList.remove('visible');
         }
 
         // Permettre la validation avec la touche Entrée
