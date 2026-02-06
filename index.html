@@ -288,8 +288,8 @@
             </div>
 
             <div class="form-group">
-                <label for="telephone">Numéro de téléphone *</label>
-                <input type="tel" id="telephone" required autocomplete="tel" placeholder="06 12 34 56 78" inputmode="tel" pattern="[0-9+#\s\-\(\)]*">
+                <label for="telephone">Numéro de téléphone</label>
+                <input type="tel" id="telephone" autocomplete="tel" placeholder="06 12 34 56 78" inputmode="tel" pattern="[0-9+#\s\-\(\)]*">
             </div>
 
             <div class="form-group">
@@ -387,8 +387,8 @@
             const telephone = document.getElementById('telephone').value.trim();
             const email = document.getElementById('email').value.trim();
 
-            // Validation
-            if (!prenom || !nom || !telephone || !email) {
+            // Validation (téléphone optionnel maintenant)
+            if (!prenom || !nom || !email) {
                 afficherMessage('error');
                 return;
             }
@@ -401,13 +401,16 @@
             }
 
             // Ajouter le contact
+            const maintenant = new Date();
             const nouveauContact = {
                 id: Date.now(),
                 prenom: prenom,
                 nom: nom,
-                telephone: telephone,
+                telephone: telephone || 'Non renseigné',
                 email: email,
-                dateEnregistrement: new Date().toLocaleString('fr-FR')
+                date: maintenant.toLocaleDateString('fr-FR'),
+                heure: maintenant.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+                dateEnregistrement: maintenant.toLocaleString('fr-FR')
             };
 
             contacts.push(nouveauContact);
@@ -443,7 +446,7 @@
                             <div>📱 ${contact.telephone}</div>
                             <div>📧 ${contact.email}</div>
                             <div style="font-size: 12px; color: #999; margin-top: 5px;">
-                                Enregistré le ${contact.dateEnregistrement}
+                                📅 ${contact.date} à ${contact.heure}
                             </div>
                             <button class="btn-delete" onclick="supprimerContact(${contact.id})">🗑️ Supprimer</button>
                         </div>
@@ -491,10 +494,10 @@
                 return;
             }
 
-            let csv = 'Prénom,Nom,Téléphone,Email,Date d\'enregistrement\n';
+            let csv = 'Prénom,Nom,Téléphone,Email\n';
             
             contacts.forEach(contact => {
-                csv += `"${contact.prenom}","${contact.nom}","${contact.telephone}","${contact.email}","${contact.dateEnregistrement}"\n`;
+                csv += `"${contact.prenom}","${contact.nom}","${contact.telephone}","${contact.email}"\n`;
             });
 
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -546,9 +549,20 @@
         chargerContacts();
 
         // Système d'authentification admin
-        const ADMIN_PASSWORD = "1104";
+        // Mot de passe hashé (SHA-256)
+        const ADMIN_PASSWORD_HASH = "d74fe97872d8a425b5263add13d51a1066bf0b2cdd5e368d316dfe31048b2104";
         let adminClicks = 0;
         let adminClickTimer = null;
+
+        // Fonction de hashage SHA-256
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
 
         // Triple clic sur le coin en bas à droite pour afficher l'admin
         function toggleAdmin() {
@@ -573,11 +587,13 @@
             }
         }
 
-        function verifierMotDePasse() {
+        async function verifierMotDePasse() {
             const password = document.getElementById('adminPassword').value;
             const wrongPassword = document.getElementById('wrongPassword');
             
-            if (password === ADMIN_PASSWORD) {
+            const hash = await hashPassword(password);
+            
+            if (hash === ADMIN_PASSWORD_HASH) {
                 document.getElementById('adminLocked').style.display = 'none';
                 document.getElementById('adminContent').classList.add('unlocked');
                 document.getElementById('adminPassword').value = '';
