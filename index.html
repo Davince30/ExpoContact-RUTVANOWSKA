@@ -13,25 +13,68 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --container-bg: white;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --input-bg: #f8f9fa;
+            --input-border: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode {
+            --bg-gradient-start: #1a1a2e;
+            --bg-gradient-end: #16213e;
+            --container-bg: #0f3460;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --input-bg: #1a1a2e;
+            --input-border: #2a2a3e;
+            --shadow-color: rgba(0, 0, 0, 0.6);
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
             min-height: 100vh;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            transition: background 0.3s ease;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--container-bg);
+            border: 2px solid var(--input-border);
+            border-radius: 50px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 24px;
+            box-shadow: 0 4px 10px var(--shadow-color);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
         }
 
         .container {
-            background: white;
+            background: var(--container-bg);
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px var(--shadow-color);
             padding: 40px;
             width: 100%;
             max-width: 600px;
             animation: slideIn 0.5s ease-out;
+            transition: background 0.3s ease;
         }
 
         @keyframes slideIn {
@@ -45,18 +88,42 @@
             }
         }
 
+        /* Animation confettis */
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #f0f;
+            pointer-events: none;
+            z-index: 9999;
+            animation: confetti-fall 3s linear forwards;
+        }
+
         h1 {
-            color: #333;
+            color: var(--text-primary);
             font-size: 32px;
             margin-bottom: 10px;
             text-align: center;
+            transition: color 0.3s ease;
         }
 
         .subtitle {
-            color: #666;
+            color: var(--text-secondary);
             text-align: center;
             margin-bottom: 30px;
             font-size: 16px;
+            transition: color 0.3s ease;
         }
 
         .form-group {
@@ -65,26 +132,28 @@
 
         label {
             display: block;
-            color: #333;
+            color: var(--text-primary);
             font-weight: 600;
             margin-bottom: 8px;
             font-size: 16px;
+            transition: color 0.3s ease;
         }
 
         input {
             width: 100%;
             padding: 15px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--input-border);
             border-radius: 10px;
             font-size: 16px;
             transition: all 0.3s ease;
-            background: #f8f9fa;
+            background: var(--input-bg);
+            color: var(--text-primary);
         }
 
         input:focus {
             outline: none;
             border-color: #667eea;
-            background: white;
+            background: var(--container-bg);
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
@@ -139,13 +208,14 @@
         }
 
         .stats {
-            background: #f8f9fa;
+            background: var(--input-bg);
             padding: 15px;
             border-radius: 10px;
             text-align: center;
             margin-bottom: 20px;
             font-size: 14px;
-            color: #666;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
         }
 
         .stats strong {
@@ -158,8 +228,9 @@
         .admin-section {
             margin-top: 30px;
             padding-top: 30px;
-            border-top: 2px solid #e0e0e0;
+            border-top: 2px solid var(--input-border);
             display: none;
+            transition: border-color 0.3s ease;
         }
 
         .admin-section.visible {
@@ -196,21 +267,71 @@
             display: block;
         }
 
+        .search-box {
+            margin: 20px 0;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid var(--input-border);
+            background: var(--input-bg);
+            color: var(--text-primary);
+        }
+
+        .chart-container {
+            background: var(--input-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            max-height: 300px;
+        }
+
+        .chart-bar {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            gap: 10px;
+        }
+
+        .chart-label {
+            min-width: 80px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .chart-bar-fill {
+            height: 25px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 5px;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
         .contact-list {
             max-height: 400px;
             overflow-y: auto;
-            background: #f8f9fa;
+            background: var(--input-bg);
             padding: 20px;
             border-radius: 10px;
             margin-top: 15px;
+            transition: background 0.3s ease;
         }
 
         .contact-item {
-            background: white;
+            background: var(--container-bg);
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 5px var(--shadow-color);
+            transition: all 0.3s ease;
         }
 
         .contact-item strong {
@@ -219,7 +340,8 @@
 
         .contact-item div {
             margin: 5px 0;
-            color: #333;
+            color: var(--text-primary);
+            transition: color 0.3s ease;
         }
 
         .btn-delete {
@@ -259,8 +381,10 @@
     </style>
 </head>
 <body>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙</button>
+    
     <div class="container">
-        <h1>📝 Newsletter RUTVANOWSKA</h1>
+        <h1>📝 Newsletter RTVANOWSKA</h1>
         <p class="subtitle">Merci de votre visite ! Laissez-nous vos coordonnées.</p>
 
         <div class="stats">
@@ -316,9 +440,19 @@
             </div>
 
             <div class="admin-content" id="adminContent">
+                <div class="chart-container">
+                    <h3 style="color: var(--text-primary); margin-bottom: 15px; font-size: 18px;">📊 Inscriptions par heure</h3>
+                    <div id="statsChart"></div>
+                </div>
+
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="🔍 Rechercher un contact (nom, prénom, email, téléphone)..." oninput="rechercherContact()">
+                </div>
+
                 <button class="btn btn-secondary" onclick="afficherContacts()">Voir tous les contacts</button>
                 <button class="btn btn-secondary" onclick="exporterContacts()">📥 Télécharger les contacts (CSV)</button>
                 <button class="btn btn-secondary" onclick="exporterVCard()">📇 Télécharger VCard (pour contacts iPhone/iPad)</button>
+                <button class="btn btn-secondary" onclick="backupManuel()">💾 Backup manuel maintenant</button>
                 <button class="btn btn-secondary btn-delete-all" onclick="supprimerTout()">🗑️ Supprimer tous les contacts</button>
                 <button class="btn btn-secondary" onclick="verrouiller()" style="background: #6c757d; margin-top: 15px;">🔒 Verrouiller</button>
                 <div class="contact-list" id="contactList" style="display: none;"></div>
@@ -329,6 +463,8 @@
     <script>
         // Initialisation
         let contacts = [];
+        let contactsFiltered = [];
+        let backupInterval = null;
 
         // Charger les contacts au démarrage
         function chargerContacts() {
@@ -337,10 +473,18 @@
                 if (savedContacts) {
                     contacts = JSON.parse(savedContacts);
                     mettreAJourCompteur();
+                    // Ne pas appeler mettreAJourGraphique ici car la section admin n'est pas encore visible
                 }
             } catch (error) {
                 console.log('Aucun contact enregistré pour le moment');
                 contacts = [];
+            }
+            
+            // Charger le thème
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeToggle').textContent = '☀️';
             }
         }
 
@@ -353,6 +497,41 @@
                 console.error('Erreur de sauvegarde:', error);
                 alert('Erreur lors de la sauvegarde. Vérifiez que le stockage Safari est activé.');
                 return false;
+            }
+        }
+
+        // Toggle mode sombre/clair
+        function toggleTheme() {
+            const body = document.body;
+            const toggle = document.getElementById('themeToggle');
+            
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                toggle.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.add('dark-mode');
+                toggle.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Animation confettis
+        function lancerConfettis() {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffa500'];
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 30);
             }
         }
 
@@ -400,6 +579,13 @@
                 return;
             }
 
+            // ✅ ANTI-DOUBLON : Vérifier si l'email existe déjà
+            const emailExiste = contacts.some(contact => contact.email.toLowerCase() === email.toLowerCase());
+            if (emailExiste) {
+                alert('⚠️ Cet email est déjà enregistré !');
+                return;
+            }
+
             // Ajouter le contact
             const maintenant = new Date();
             const nouveauContact = {
@@ -421,6 +607,10 @@
             if (sauvegarde) {
                 afficherMessage('success');
                 mettreAJourCompteur();
+                mettreAJourGraphique();
+                
+                // 🎉 CONFETTIS !
+                lancerConfettis();
                 
                 // Réinitialiser le formulaire
                 this.reset();
@@ -435,12 +625,23 @@
         // Afficher tous les contacts
         function afficherContacts() {
             const contactList = document.getElementById('contactList');
+            const searchValue = document.getElementById('searchInput').value.toLowerCase();
+            
+            // Filtrer selon la recherche
+            const contactsAAfficher = searchValue 
+                ? contacts.filter(c => 
+                    c.prenom.toLowerCase().includes(searchValue) ||
+                    c.nom.toLowerCase().includes(searchValue) ||
+                    c.email.toLowerCase().includes(searchValue) ||
+                    c.telephone.toLowerCase().includes(searchValue)
+                  )
+                : contacts;
             
             if (contactList.style.display === 'none') {
-                if (contacts.length === 0) {
-                    contactList.innerHTML = '<p style="text-align: center; color: #666;">Aucun contact enregistré</p>';
+                if (contactsAAfficher.length === 0) {
+                    contactList.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Aucun contact trouvé</p>';
                 } else {
-                    contactList.innerHTML = contacts.map(contact => `
+                    contactList.innerHTML = contactsAAfficher.map(contact => `
                         <div class="contact-item">
                             <div><strong>${contact.prenom} ${contact.nom}</strong></div>
                             <div>📱 ${contact.telephone}</div>
@@ -458,12 +659,94 @@
             }
         }
 
+        // Rechercher un contact
+        function rechercherContact() {
+            if (document.getElementById('contactList').style.display === 'block') {
+                afficherContacts();
+                afficherContacts(); // Double appel pour refresh
+            }
+        }
+
+        // Mettre à jour le graphique
+        function mettreAJourGraphique() {
+            const statsChart = document.getElementById('statsChart');
+            if (!statsChart) {
+                console.log('Graphique non disponible (section admin fermée)');
+                return;
+            }
+            
+            // Compter les inscriptions par heure
+            const stats = {};
+            contacts.forEach(contact => {
+                const heure = contact.heure ? contact.heure.split(':')[0] + 'h' : 'Inconnu';
+                stats[heure] = (stats[heure] || 0) + 1;
+            });
+            
+            // Trouver le max pour la largeur relative
+            const maxCount = Math.max(...Object.values(stats), 1);
+            
+            // Générer les barres
+            let html = '';
+            Object.entries(stats)
+                .sort((a, b) => a[0].localeCompare(b[0]))
+                .forEach(([heure, count]) => {
+                    const width = (count / maxCount) * 100;
+                    html += `
+                        <div class="chart-bar">
+                            <div class="chart-label">${heure}</div>
+                            <div class="chart-bar-fill" style="width: ${width}%">${count}</div>
+                        </div>
+                    `;
+                });
+            
+            statsChart.innerHTML = html || '<p style="text-align: center; color: var(--text-secondary);">Aucune donnée</p>';
+        }
+
+        // Backup automatique toutes les 3h
+        function demarrerBackupAuto() {
+            // Backup toutes les 3 heures (3 * 60 * 60 * 1000 ms)
+            backupInterval = setInterval(() => {
+                if (contacts.length > 0) {
+                    backupManuel();
+                    console.log('Backup automatique effectué à', new Date().toLocaleString('fr-FR'));
+                }
+            }, 3 * 60 * 60 * 1000);
+        }
+
+        // Backup manuel
+        function backupManuel() {
+            if (contacts.length === 0) {
+                alert('Aucun contact à sauvegarder');
+                return;
+            }
+            
+            const backupData = {
+                date: new Date().toISOString(),
+                contacts: contacts
+            };
+            
+            const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `backup_expo_${new Date().toISOString().split('T')[0]}_${new Date().getHours()}h${new Date().getMinutes()}.json`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert('✅ Backup effectué avec succès !');
+        }
+
         // Supprimer un contact spécifique
         function supprimerContact(id) {
             if (confirm('Voulez-vous vraiment supprimer ce contact ?')) {
                 contacts = contacts.filter(contact => contact.id !== id);
                 sauvegarderContacts();
                 mettreAJourCompteur();
+                mettreAJourGraphique();
                 afficherContacts(); // Rafraîchir la liste
                 afficherContacts(); // Toggle pour réafficher
             }
@@ -481,6 +764,7 @@
                     contacts = [];
                     sauvegarderContacts();
                     mettreAJourCompteur();
+                    mettreAJourGraphique();
                     document.getElementById('contactList').style.display = 'none';
                     alert('Tous les contacts ont été supprimés');
                 }
@@ -547,6 +831,9 @@
 
         // Charger les contacts au démarrage
         chargerContacts();
+        
+        // Démarrer le backup automatique
+        demarrerBackupAuto();
 
         // Système d'authentification admin
         // Mot de passe hashé (SHA-256)
@@ -598,6 +885,9 @@
                 document.getElementById('adminContent').classList.add('unlocked');
                 document.getElementById('adminPassword').value = '';
                 wrongPassword.style.display = 'none';
+                
+                // Mettre à jour le graphique maintenant que la section admin est visible
+                mettreAJourGraphique();
             } else {
                 wrongPassword.style.display = 'block';
                 document.getElementById('adminPassword').value = '';
